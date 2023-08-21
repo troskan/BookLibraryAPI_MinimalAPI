@@ -1,4 +1,7 @@
 
+using BookLibraryApi.Repositories.Interface;
+using BookLibraryApi.Repositories;
+
 namespace BookLibraryApi
 {
     public class Program
@@ -13,6 +16,8 @@ namespace BookLibraryApi
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+
+            builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 
             var app = builder.Build();
 
