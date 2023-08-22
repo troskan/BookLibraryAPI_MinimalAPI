@@ -35,10 +35,11 @@ namespace BookLibraryApi
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
-
+            
             app.UseHttpsRedirection();
-
             app.UseAuthorization();
+
+
 
             BookMethods.BookCrud(app);
 
