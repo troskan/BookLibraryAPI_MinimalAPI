@@ -1,6 +1,11 @@
 
 using BookLibraryApi.Repositories.Interface;
 using BookLibraryApi.Repositories;
+using BookLibraryApi.Data;
+using Microsoft.EntityFrameworkCore;
+using BookLibraryApi.Models;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Identity.Client;
 
 namespace BookLibraryApi
 {
@@ -17,6 +22,9 @@ namespace BookLibraryApi
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
+
+            builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
             builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 
             var app = builder.Build();
@@ -32,27 +40,11 @@ namespace BookLibraryApi
 
             app.UseAuthorization();
 
-            var summaries = new[]
-            {
-            "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-        };
-
-            app.MapGet("/weatherforecast", (HttpContext httpContext) =>
-            {
-                var forecast = Enumerable.Range(1, 5).Select(index =>
-                    new WeatherForecast
-                    {
-                        Date = DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-                        TemperatureC = Random.Shared.Next(-20, 55),
-                        Summary = summaries[Random.Shared.Next(summaries.Length)]
-                    })
-                    .ToArray();
-                return forecast;
-            })
-            .WithName("GetWeatherForecast")
-            .WithOpenApi();
+            BookMethods.BookCrud(app);
 
             app.Run();
+            
         }
+
     }
 }
