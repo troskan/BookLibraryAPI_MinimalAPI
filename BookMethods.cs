@@ -1,4 +1,5 @@
 ﻿using BookLibraryApi.Models;
+using BookLibraryApi.Repositories;
 using BookLibraryApi.Repositories.Interface;
 
 namespace BookLibraryApi
@@ -27,7 +28,18 @@ namespace BookLibraryApi
 
             })
             .WithName("GetBooks")
-            .WithOpenApi();
+            .WithOpenApi(); 
+            
+                //GetAllGenres
+                app.MapGet("genres", (GenreRepository repo) =>
+                {
+                    var genres = repo.GetGenres();
+
+                    return genres;
+
+                })
+                .WithName("GetGenres")
+                .WithOpenApi();
 
             //CreateBook
             app.MapPost("book", (Book newBook, IRepository<Book> repo) =>
