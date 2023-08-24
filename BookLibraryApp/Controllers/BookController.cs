@@ -20,24 +20,37 @@ namespace BookLibraryApp.Controllers
 
         }
         // GET: BookController
-        public async Task<ActionResult> Index()
+        public async Task<IActionResult> Index(string searchString = null)
         {
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                return await Search(searchString);
+            }
+
             var response = await _httpClient.GetAsync("https://localhost:7262/books");
 
             if (response.IsSuccessStatusCode)
             {
                 var jsonResponse = await response.Content.ReadAsStringAsync();
-
                 var books = JsonConvert.DeserializeObject<List<Book>>(jsonResponse);
                 return View(books);
             }
-            return View("error");
+            return View("Error");
         }
 
         // GET: BookController/Details/5
-        public ActionResult Details(int id)
+        public async Task<ActionResult> Details(int id)
         {
-            return View();
+
+            var response = await _httpClient.GetAsync($"https://localhost:7262/books/{id}");
+
+            if (response.IsSuccessStatusCode)
+            {
+                var jsonResponse = await response.Content.ReadAsStringAsync();
+                var book = JsonConvert.DeserializeObject<Book>(jsonResponse);
+                return View(book);
+            }
+            return View("Error");
         }
 
 
@@ -194,5 +207,20 @@ namespace BookLibraryApp.Controllers
                 return View();
             }
         }
+        public async Task<IActionResult> Search(string searchString)
+        {
+            // Use the query string parameter instead of the route parameter
+            var response = await _httpClient.GetAsync($"https://localhost:7262/search?searchString={searchString}");
+
+            if (response.IsSuccessStatusCode)
+            {
+                var jsonResponse = await response.Content.ReadAsStringAsync();
+                var books = JsonConvert.DeserializeObject<List<Book>>(jsonResponse);
+                return View("Index", books);
+            }
+            _logger.LogError("Error could not fetch Search result");
+            return View("Error");
+        }
+
     }
 }

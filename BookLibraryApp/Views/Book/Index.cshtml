@@ -7,10 +7,9 @@
 <h1>Library Control Panel</h1>
 
 <p>
-    <a asp-action="Create"><button class="btn btn-primary">Create New Book</button></a>
-    <form>
-        <input style="height:contain;" placeholder="Search for a book" />
-        <a asp-action="Search"><button class="btn btn-outline-success">Search</button></a>
+    <form asp-controller="Book" asp-action="Search" method="get">
+        <input type="text" name="searchString" style="height:contain;" placeholder="Search for a book" />
+        <button type="submit" class="btn btn-outline-success">Search</button>
     </form>
 
 </p>

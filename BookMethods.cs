@@ -42,6 +42,14 @@ namespace BookLibraryApi
                 .WithName("GetGenres")
                 .WithOpenApi();
 
+            app.MapGet("search", (string searchString, FilterRepository repo) =>
+            {
+                var result = repo.Search(searchString);
+                return result;
+            })
+            .WithName("GetResults")
+            .WithOpenApi();
+
             //CreateBook
             app.MapPost("book", (Book newBook, IRepository<Book> repo) =>
             {
