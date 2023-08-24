@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.DotNet.MSIdentity.Shared;
 using Newtonsoft.Json;
+using System.Text;
 
 namespace BookLibraryApp.Controllers
 {
@@ -76,19 +77,27 @@ namespace BookLibraryApp.Controllers
                         return RedirectToAction("Index");
 
                     }
+                    else
+                    {
+                        _logger.LogInformation("Post unsuccessful");
+                        return RedirectToAction("Index");
+
+                    }
 
                 }
                 catch (Exception ex)
                 {
                     _logger.LogError(ex.ToString());
-                    return View("Error");
+                    ModelState.AddModelError(string.Empty, "An error occurred while creating the book.");
+                    return View(book);
                 }
 
             }
             return View(book);
 
         }
-
+        // GET: book/edit
+        [HttpGet]
         public async Task<ActionResult> Edit(int id)
         {
             var bookApi = $"https://localhost:7262/books/{id}";
@@ -122,17 +131,47 @@ namespace BookLibraryApp.Controllers
         }
         // POST: BookController/Edit/5
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
+        public async Task<ActionResult> Edit(int id, Book bookToEdit) 
         {
-            try
+            var apiUrl = $"https://localhost:7262/book/{id}";
+            var genresUrl = "https://localhost:7262/genres";
+
+            var bookJson = JsonConvert.SerializeObject(bookToEdit);
+            var content = new StringContent(bookJson, Encoding.UTF8, "application/json");
+
+            var response = await _httpClient.PutAsync(apiUrl, content);
+
+            if (response.IsSuccessStatusCode)
             {
-                return RedirectToAction(nameof(Index));
+                _logger.LogInformation("API PUT SUCCESSFUL, RETURN TO INDEX");
+                return RedirectToAction("Index");
             }
-            catch
+            else
             {
-                return View();
+                _logger.LogError($"Could not post Model. {response.Content.ReadAsStringAsync()}");
+                var genresResponse = await _httpClient.GetAsync(genresUrl);
+                if (!genresResponse.IsSuccessStatusCode)
+                {
+                    var responseBody = await genresResponse.Content.ReadAsStringAsync();
+                    _logger.LogInformation($"Genres Response: {responseBody}");
+                    return View("Error");
+                }
+                var genres = await genresResponse.Content.ReadFromJsonAsync<List<string>>();
+
+
+
+                var viewModel = new BookEditViewModel
+                {
+                    Book = bookToEdit,
+                    Genres = genres
+                };
+
+                // Log the error or display it to the user
+                var errorMessage = await response.Content.ReadAsStringAsync();
+                ModelState.AddModelError(string.Empty, errorMessage);
+                return View(viewModel);  // Return to the edit view with the model to show errors
             }
+
         }
 
         // GET: BookController/Delete/5

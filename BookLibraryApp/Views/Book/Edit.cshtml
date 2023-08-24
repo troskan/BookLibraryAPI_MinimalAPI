@@ -7,7 +7,7 @@
     <h1 class="display-4">Edit Book</h1>
     <div class="container">
 
-        <form asp-action="Create" asp-controller="Book" method="post" class="mx-auto w-25">
+        <form asp-action="Edit" asp-controller="Book" method="post" class="mx-auto w-25">
             <div class="form-group">
                 <label for="Title">Title</label>
                 <input type="text" class="form-control" id="Title" name="Title" placeholder="Enter title" Value="@Model.Book.Title">
