@@ -5,7 +5,7 @@ VisualStudioVersion = 17.5.33530.505
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BookLibraryApi", "BookLibraryApi.csproj", "{B724F6F6-F3E6-432E-875E-247CCAF7B6FD}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BookLibraryApp", "BookLibraryApp\BookLibraryApp.csproj", "{9B1920C2-2C02-486F-A5E7-41E6636E65A7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BookLibraryApp", "..\BookLibraryApp\BookLibraryApp.csproj", "{E907FFF2-897C-436C-A14F-AD6A9694CB6C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,10 +17,10 @@ Global
 		{B724F6F6-F3E6-432E-875E-247CCAF7B6FD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B724F6F6-F3E6-432E-875E-247CCAF7B6FD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B724F6F6-F3E6-432E-875E-247CCAF7B6FD}.Release|Any CPU.Build.0 = Release|Any CPU
-		{9B1920C2-2C02-486F-A5E7-41E6636E65A7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9B1920C2-2C02-486F-A5E7-41E6636E65A7}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9B1920C2-2C02-486F-A5E7-41E6636E65A7}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9B1920C2-2C02-486F-A5E7-41E6636E65A7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E907FFF2-897C-436C-A14F-AD6A9694CB6C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E907FFF2-897C-436C-A14F-AD6A9694CB6C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E907FFF2-897C-436C-A14F-AD6A9694CB6C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E907FFF2-897C-436C-A14F-AD6A9694CB6C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
