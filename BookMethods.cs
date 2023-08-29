@@ -1,6 +1,7 @@
 ﻿using BookLibraryApi.Models;
 using BookLibraryApi.Repositories;
 using BookLibraryApi.Repositories.Interface;
+using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
 
 namespace BookLibraryApi
@@ -10,15 +11,19 @@ namespace BookLibraryApi
         public static void BookCrud(WebApplication app)
         {
             //GetBookById
-            app.MapGet("books/{id}", (int id, IRepository<Book> repo) =>
+            app.MapGet("books/{id}", ([FromServices] IRepository<Book> repo, int id) =>
             {
                 var book = repo.GetById(id);
 
-                return book;
-
+                if (book == null)
+                {
+                    return Results.NotFound(book);
+                }
+                return Results.Ok(book);
             })
             .WithName("GetBookById")
             .WithOpenApi();
+
 
             //GetAllBooks
             app.MapGet("books", (IRepository<Book> repo) =>
