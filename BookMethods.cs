@@ -3,6 +3,7 @@ using BookLibraryApi.Repositories;
 using BookLibraryApi.Repositories.Interface;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
+using System.Net;
 
 namespace BookLibraryApi
 {
@@ -13,13 +14,18 @@ namespace BookLibraryApi
             //GetBookById
             app.MapGet("books/{id}", ([FromServices] IRepository<Book> repo, int id) =>
             {
+                ApiResponse response = new ApiResponse() { IsSuccess = false, StatusCode = HttpStatusCode.BadRequest };
+
                 var book = repo.GetById(id);
 
                 if (book == null)
                 {
                     return Results.NotFound(book);
                 }
-                return Results.Ok(book);
+                response.IsSuccess = true;
+                response.StatusCode = HttpStatusCode.OK;
+                response.Result = book;
+                return Results.Ok(response);
             })
             .WithName("GetBookById")
             .WithOpenApi();
