@@ -20,11 +20,13 @@ namespace BookLibraryApi
 
                 if (book == null)
                 {
-                    return Results.NotFound(book);
+                    response.ErrorMessages.Add("Model is null");
+                    return Results.NotFound(response);
                 }
                 response.IsSuccess = true;
                 response.StatusCode = HttpStatusCode.OK;
                 response.Result = book;
+
                 return Results.Ok(response);
             })
             .WithName("GetBookById")
@@ -32,18 +34,32 @@ namespace BookLibraryApi
 
 
             //GetAllBooks
-            app.MapGet("books", (IRepository<Book> repo) =>
+            //app.MapGet("books", ([FromServices] IRepository<Book> repo) =>
+            app.MapGet("books", (HttpContext context, IRepository<Book> repo) =>
             {
                 var books = repo.GetAll();
 
-                return books;
-
+                if (books != null)
+                {
+                    ApiResponse response = new ApiResponse()
+                    {
+                        IsSuccess = true,
+                        StatusCode = HttpStatusCode.OK,
+                        Result = books
+                    };
+                    return Results.Ok(response);
+                }
+                else
+                {
+                    return Results.NotFound("No books found");
+                }
             })
             .WithName("GetBooks")
-            .WithOpenApi(); 
-            
-                //GetAllGenres
-                app.MapGet("genres", (GenreRepository repo) =>
+            .WithOpenApi();
+
+
+            //GetAllGenres
+            app.MapGet("genres", (GenreRepository repo) =>
                 {
                     var genres = repo.GetGenres();
 
