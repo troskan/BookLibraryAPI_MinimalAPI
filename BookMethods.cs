@@ -12,7 +12,7 @@ namespace BookLibraryApi
         public static void BookCrud(WebApplication app)
         {
             //GetBookById
-            app.MapGet("books/{id}", ([FromServices] IRepository<Book> repo, int id) =>
+            app.MapGet("book/{id}", ([FromServices] IRepository<Book> repo, int id) =>
             {
                 ApiResponse response = new ApiResponse() { IsSuccess = false, StatusCode = HttpStatusCode.BadRequest };
 
@@ -35,7 +35,7 @@ namespace BookLibraryApi
 
             //GetAllBooks
             //app.MapGet("books", ([FromServices] IRepository<Book> repo) =>
-            app.MapGet("books", (HttpContext context, IRepository<Book> repo) =>
+            app.MapGet("book", (HttpContext context, IRepository<Book> repo) =>
             {
                 var books = repo.GetAll();
 
@@ -59,12 +59,14 @@ namespace BookLibraryApi
 
 
             //GetAllGenres
-            app.MapGet("genres", (GenreRepository repo) =>
+            app.MapGet("genres", async (GenreRepository repo) =>
                 {
-                    var genres = repo.GetGenres();
+                    ApiResponse response = new ApiResponse() { IsSuccess = false, StatusCode = HttpStatusCode.BadRequest };
 
-                    return genres;
-
+                    response.Result = repo.GetGenres();
+                    response.StatusCode = HttpStatusCode.OK;
+                    response.IsSuccess = true;
+                    return Results.Ok(response);
                 })
                 .WithName("GetGenres")
                 .WithOpenApi();
