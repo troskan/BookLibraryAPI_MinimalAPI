@@ -1,5 +1,9 @@
 ﻿using BookLibraryApi.Models;
+using BookLibraryApi.Repositories;
 using BookLibraryApi.Repositories.Interface;
+using Microsoft.AspNetCore.Mvc;
+using System.ComponentModel.DataAnnotations;
+using System.Net;
 
 namespace BookLibraryApi
 {
@@ -8,25 +12,74 @@ namespace BookLibraryApi
         public static void BookCrud(WebApplication app)
         {
             //GetBookById
-            app.MapGet("books/{id}", (int id, IRepository<Book> repo) =>
+            app.MapGet("book/{id}", ([FromServices] IRepository<Book> repo, int id) =>
             {
+                ApiResponse response = new ApiResponse() { IsSuccess = false, StatusCode = HttpStatusCode.BadRequest };
+
                 var book = repo.GetById(id);
 
-                return book;
+                if (book == null)
+                {
+                    response.ErrorMessages.Add("Model is null");
+                    response.StatusCode = HttpStatusCode.NotFound;
+
+                    return response;
+                }
+                response.IsSuccess = true;
+                response.StatusCode = HttpStatusCode.OK;
+                response.Result = book;
+
+                return response;
 
             })
             .WithName("GetBookById")
             .WithOpenApi();
 
+
             //GetAllBooks
-            app.MapGet("books", (IRepository<Book> repo) =>
+            app.MapGet("book", (HttpContext context, IRepository<Book> repo) =>
             {
+                ApiResponse response = new ApiResponse() { IsSuccess = false, StatusCode = HttpStatusCode.BadRequest };
+
                 var books = repo.GetAll();
 
-                return books;
+                if (books != null)
+                {
+                    response.StatusCode = HttpStatusCode.OK;
+                    response.IsSuccess = true;
+                    response.Result = books;
 
+                    return response;
+                }
+                else
+                {
+                    response.StatusCode = HttpStatusCode.NotFound;
+                    return response;
+                }
             })
             .WithName("GetBooks")
+            .WithOpenApi();
+
+
+            //GetAllGenres
+            app.MapGet("genres", async (GenreRepository repo) =>
+                {
+                    ApiResponse response = new ApiResponse() { IsSuccess = false, StatusCode = HttpStatusCode.BadRequest };
+
+                    response.Result = repo.GetGenres();
+                    response.StatusCode = HttpStatusCode.OK;
+                    response.IsSuccess = true;
+                    return Results.Ok(response);
+                })
+                .WithName("GetGenres")
+                .WithOpenApi();
+
+            app.MapGet("search", (string searchString, FilterRepository repo) =>
+            {
+                var result = repo.Search(searchString);
+                return result;
+            })
+            .WithName("GetResults")
             .WithOpenApi();
 
             //CreateBook
@@ -56,9 +109,12 @@ namespace BookLibraryApi
             //DeleteBook
             app.MapDelete("book/{id}", (int id, IRepository<Book> repo) =>
             {
+                ApiResponse response = new ApiResponse() { IsSuccess = false, StatusCode = HttpStatusCode.BadRequest };
+
                 if (id <= 0)
                 {
-                    return Results.BadRequest("Invalid book ID provided.");
+                    response.StatusCode= HttpStatusCode.BadRequest;
+                    return response;
                 }
 
                 try
@@ -67,15 +123,24 @@ namespace BookLibraryApi
 
                     if (bookToDelete == null)
                     {
-                        return Results.NotFound($"Book with ID {id} not found.");
+                        response.StatusCode = HttpStatusCode.NotFound;
+                        return response;
                     }
 
                     repo.Delete(bookToDelete);
-                    return Results.Ok(bookToDelete);
+                    response.StatusCode = HttpStatusCode.OK;
+                    response.IsSuccess = true;
+                    response.Result = bookToDelete;
+                    return response;
                 }
                 catch (Exception ex)
                 {
-                    return Results.Problem($"An error occurred trying to delete data.\n{ex.Message}");
+                    response.StatusCode = HttpStatusCode.BadRequest;
+                    response.IsSuccess = false;
+                    response.ErrorMessages.Add(ex.Message);
+
+                    return response;
+
                 }
 
             })
@@ -85,15 +150,16 @@ namespace BookLibraryApi
             //UpdateBook
             app.MapPut("book/{id}", (int id, Book updatedBook, IRepository<Book> repo) =>
             {
+                ApiResponse response = new ApiResponse() { IsSuccess = false, StatusCode = HttpStatusCode.BadRequest };
 
                 try
                 {
-
                     var bookToUpdate = repo.GetById(id);
 
                     if (updatedBook == null)
                     {
-                        return Results.NotFound($"Book object is null.");
+                        response.StatusCode = HttpStatusCode.NotFound;
+                        return response;
                     }
                     bookToUpdate.Author = updatedBook.Author;
                     bookToUpdate.PublicationYear = updatedBook.PublicationYear;
@@ -102,11 +168,17 @@ namespace BookLibraryApi
                     bookToUpdate.Title = updatedBook.Title;
 
                     repo.Update(bookToUpdate);
-                    return Results.Ok(bookToUpdate);
+                    response.StatusCode = HttpStatusCode.OK;
+                    response.IsSuccess = true;
+                    response.Result = bookToUpdate;
+                    return response;
                 }
                 catch (Exception ex)
                 {
-                    return Results.Problem($"An error occurred trying to update data.\n{ex.Message}");
+                    response.StatusCode = HttpStatusCode.BadRequest;
+                    response.ErrorMessages.Add($"{ex.Message}");
+                    response.IsSuccess = false;
+                    return response;
                 }
 
             })
