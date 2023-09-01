@@ -30,6 +30,15 @@ namespace BookLibraryApi
             builder.Services.AddScoped<GenreRepository>();
             builder.Services.AddScoped<FilterRepository>();
 
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowMyOrigin",
+                builder => builder.WithOrigins("http://localhost:5173") // Your client app's URL here
+                                   .AllowAnyHeader()
+                                   .AllowAnyMethod());
+            });
+
+
 
             var app = builder.Build();
 
@@ -39,7 +48,7 @@ namespace BookLibraryApi
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
-            
+            app.UseCors("AllowMyOrigin");
             app.UseHttpsRedirection();
             app.UseAuthorization();
 

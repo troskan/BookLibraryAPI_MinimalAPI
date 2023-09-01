@@ -76,8 +76,17 @@ namespace BookLibraryApi
 
             app.MapGet("search", (string searchString, FilterRepository repo) =>
             {
+                ApiResponse response = new ApiResponse() { IsSuccess = false, StatusCode = HttpStatusCode.BadRequest };
+                
                 var result = repo.Search(searchString);
-                return result;
+                if(result != null)
+                {
+                    response.StatusCode= HttpStatusCode.OK;
+                    response.IsSuccess= true;
+                    response.Result = result;
+                    return response;
+                }
+                return response;
             })
             .WithName("GetResults")
             .WithOpenApi();
