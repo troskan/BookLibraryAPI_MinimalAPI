@@ -34,6 +34,7 @@ namespace BookLibraryApi
             })
             .WithName("GetBookById")
             .WithOpenApi();
+            
 
 
             //GetAllBooks
@@ -175,6 +176,7 @@ namespace BookLibraryApi
                     bookToUpdate.Description = updatedBook.Description;
                     bookToUpdate.Genre = updatedBook.Genre;
                     bookToUpdate.Title = updatedBook.Title;
+                    bookToUpdate.IsAvailableForLoan = updatedBook.IsAvailableForLoan;
 
                     repo.Update(bookToUpdate);
                     response.StatusCode = HttpStatusCode.OK;

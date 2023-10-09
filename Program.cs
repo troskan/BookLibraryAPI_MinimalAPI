@@ -33,12 +33,10 @@ namespace BookLibraryApi
             builder.Services.AddCors(options =>
             {
                 options.AddPolicy("AllowMyOrigin",
-                builder => builder.WithOrigins("http://localhost:5173") // Your client app's URL here
+                builder => builder.WithOrigins("http://localhost:5173", "http://localhost:5174") // Your client app's URL here
                                    .AllowAnyHeader()
                                    .AllowAnyMethod());
             });
-
-
 
             var app = builder.Build();
 
@@ -52,12 +50,9 @@ namespace BookLibraryApi
             app.UseHttpsRedirection();
             app.UseAuthorization();
 
-
-
             BookMethods.BookCrud(app);
 
             app.Run();
-            
         }
 
     }
